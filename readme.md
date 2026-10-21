@@ -1,47 +1,62 @@
-# Quantitative Backtesting & Risk Management Pipeline
+# Quantitative Backtesting Engine: Moving Average Crossover & Risk Management
 
-A collaborative Python project focused on algorithmic trading backtesting, risk management enforcement, and out-of-sample robustness testing for financial markets.
+An open-source Python framework designed to simulate, optimize, and stress-test algorithmic trading strategies on historical equity data. 
 
----
-
-## Project Overview
-Most beginner trading projects focus exclusively on finding "magical" historical returns. This project takes a rigorous, engineering-focused approach: **methodology, parameter optimization, and strict risk management** over curve-fitted profits.
-
-Developed collaboratively using Python and Git version control, this repository simulates moving average strategies, enforces strict stop-losses, and implements chronological train/test splits to evaluate real-world viability.
+This project explores quantitative modeling fundamentals, parameter optimization, risk mitigation via stop-losses, and empirical validation using strict **In-Sample vs. Out-of-Sample (Train/Test)** methodology.
 
 ---
 
-##  Tech Stack & Tools
-* **Language:** Python
-* **Environment:** Google Colab (Cloud Jupyter Notebooks)
-* **Data Source:** Yahoo Finance API (`yfinance`)
-* **Backtesting Engine:** `backtesting.py`
-* **Data Manipulation:** `pandas`, `numpy`
-* **Version Control:** Git & GitHub
+##  Table of Contents
+- [Overview](#overview)
+- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Trading Strategy](#trading-strategy)
+- [Risk Management Engine](#risk-management-engine)
+- [Optimization & Initial Findings](#optimization--initial-findings)
+- [The Reality Check: Out-of-Sample Testing](#the-reality-check-out-of-sample-testing)
+- [Installation & Usage](#installation--usage)
+- [Next Steps & Roadmap](#next-steps--roadmap)
 
 ---
 
-##  Core Methodology & Strategy
+##  Overview
+Backtesting is an essential diagnostic tool in quantitative finance to evaluate how a systematic strategy would have performed historically. 
 
-### 1. The Strategy (Moving Average Crossover)
-* Computes two Simple Moving Averages: a **fast line** (short-term momentum) and a **slow line** (macro trend).
-* **Entry Rule:** Buy when the fast SMA crosses above the slow SMA.
-* **Exit Rule:** Close position when the fast SMA crosses below the slow SMA.
-
-### 2. Risk Management First
-* Implemented a **strict 5% stop-loss** (`sl = Close * 0.95`) upon trade entry.
-* Designed to cut losing trades early and let winning trends run, addressing the asymmetry of market risk.
-
-### 3. Overfitting & Out-of-Sample Testing
-* **The In-Sample Trap:** Initial grid searches optimized over a 5-year dataset yielded high returns (e.g., +659% on NVDA with an SMA 5/35 configuration and a 36.3% win rate), proving the value of cutting losses early (-14% max loss vs +146% max win).
-* **The Out-of-Sample Reality:** To prevent curve-fitting, we implemented chronological **Train/Test splits** (optimizing rules strictly on past blocks, e.g., 2001–2011, and testing once on unseen future data, e.g., 2012–2026). This mirrors institutional workflows where past parameters rarely guarantee future correlation.
+Rather than chasing unrealistic returns, this project focuses on **robustness, parameter stability, and execution discipline**, highlighting the danger of curve-fitting (overfitting) when optimizing trading parameters.
 
 ---
 
-##  Repository Structure
-```text
-├── notebooks/          # Google Colab notebooks for backtesting experiments
-├── src/                # Modular Python scripts (data ingestion, strategy logic)
-├── data/               # Historical OHLCV datasets and caches
-├── README.md           # Project documentation
-└── requirements.txt    # Python dependencies
+##  Architecture & Tech Stack
+- **Language:** Python 3.x
+- **Environment:** Google Colab / Jupyter Notebooks
+- **Data Ingestion:** `yfinance` API (automated retrieval of historical OHLCV data)
+- **Data Manipulation:** `pandas`, `numpy`
+- **Backtesting Core:** `backtesting.py` (event-driven simulation engine)
+- **Version Control:** Git & GitHub
+
+---
+
+##  Trading Strategy
+The initial model implements a dual **Simple Moving Average (SMA) crossover** trend-following strategy:
+* **Fast Window ($n_1$):** Tracks short-term price momentum.
+* **Slow Window ($n_2$):** Tracks broad market direction.
+* **Buy Signal:** Triggered when the Fast SMA crosses above the Slow SMA (`crossover(SMA_fast, SMA_slow)`).
+* **Exit Signal:** Triggered when the Fast SMA crosses below the Slow SMA (`crossover(SMA_slow, SMA_fast)`).
+
+---
+
+##  Risk Management Engine
+A trading edge cannot survive without capital preservation. The engine enforces an automated risk control mechanism:
+* **Dynamic Stop-Loss:** Each long position automatically sets a stop-loss at **5% below the entry price** (`sl = Close * 0.95`).
+* **Asymmetric Risk/Reward:** Demonstrates the core trading principle of **cutting losers early and letting winners run**.
+
+---
+
+##  Optimization & Initial Findings (In-Sample)
+Using grid search optimization on 5-year historical data for **NVIDIA (NVDA)** maximizing for the **Sharpe Ratio**, the optimizer identified:
+* **Optimal Windows:** SMA(5) and SMA(35)
+* **Total Return:** ~659% (In-Sample)
+* **Maximum Drawdown:** Capped at -36%
+* **Win Rate:** **36.3%**
+
+### Key Takeaway
+Despite losing on nearly two-thirds of the trades (~64% loss rate), the strategy remained highly profitable in-sample because the stop-loss strictly limited downside risk (worst single loss: -14%), while the trend captured outlier upside moves (best single trade: +146%).
