@@ -62,16 +62,6 @@ Using grid search optimization on 5-year historical data for **NVIDIA (NVDA)** m
 Despite losing on nearly two-thirds of the trades (~64% loss rate), the strategy remained highly profitable in-sample because the stop-loss strictly limited downside risk (worst single loss: -14%), while the trend captured outlier upside moves (best single trade: +146%).
 ---
 
-## 👥 Contributors & Authors
-
-This project is a collaborative effort developed by:
-
-* **Mathis A Motevally**  
-  * GitHub: [@mts924](https://github.com/mts.924)  
-  * LinkedIn: [Mathis A Motevally](https://www.linkedin.com)
-
-* **[Nom du collaborateur]**  
-  * GitHub: [@pseudo-github]---
 
 ## 👥 Contributors & Authors
 
